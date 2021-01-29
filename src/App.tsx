@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 // custom components
 import Item from "./Item";
+import Cart from "./Cart";
 // library components
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import Badge from "@material-ui/core/Badge";
@@ -24,10 +25,39 @@ function App() {
     getProducts
   );
 
-  const getTotalItems = (items: CartItemType[]) =>
-    items.reduce((ack: number, item: CartItemType) => ack + item.amount, 0);
-  const handleAddToCart = (clickedItem: CartItemType) => null;
-  const handleRemoveFromCart = () => null;
+  const getTotalItems = (cartItems: CartItemType[]) =>
+    cartItems.reduce(
+      (accumulator: number, cartItem: CartItemType) =>
+        accumulator + cartItem.amount,
+      0
+    );
+  const handleAddToCart = (clickedItem: CartItemType) =>
+    setCartItems((prev) => {
+      // 1. Product is already in the cart
+      const isCartItemExist = prev.find(
+        (cartItem) => cartItem.id === clickedItem.id
+      );
+      if (isCartItemExist) {
+        return prev.map((cartItem) =>
+          cartItem.id === clickedItem.id
+            ? { ...cartItem, amount: cartItem.amount + 1 }
+            : cartItem
+        );
+      }
+      // 2. First time add product
+      return [...prev, { ...clickedItem, amount: 1 }];
+    });
+  const handleRemoveFromCart = (id: number) => {
+    setCartItems((prev) =>
+      prev.reduce((accumulator, current) => {
+        if (current.id === id) {
+          if (current.amount === 1) return accumulator;
+          return [...accumulator, { ...current, amount: current.amount - 1 }];
+        }
+        return [...accumulator, current];
+      }, [] as CartItemType[])
+    );
+  };
 
   if (isLoading) return <LinearProgress />;
   if (error) return <div>Something went wrong ...</div>;
@@ -35,7 +65,11 @@ function App() {
   return (
     <Wrapper>
       <Drawer anchor="right" open={cartOpen} onClose={() => setCartOpen(false)}>
-        Cart goes here!!
+        <Cart
+          cartItems={cartItems}
+          addToCart={handleAddToCart}
+          removeFromCart={handleRemoveFromCart}
+        />
       </Drawer>
       <StyledButton onClick={() => setCartOpen(true)}>
         <Badge badgeContent={getTotalItems(cartItems)} color="error">
