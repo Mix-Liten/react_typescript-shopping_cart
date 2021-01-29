@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 // custom components
-import Item from "./Item";
+import Product from "./Product";
 import Cart from "./Cart";
 // library components
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
@@ -10,7 +10,7 @@ import Drawer from "@material-ui/core/Drawer";
 import Grid from "@material-ui/core/Grid";
 import LinearProgress from "@material-ui/core/LinearProgress";
 // styles
-import { Wrapper, StyledButton } from "./App.styles";
+import { StyledWrapper, StyledButton } from "./App.styles";
 // types
 import { CartItemType } from "./types";
 
@@ -31,21 +31,21 @@ function App() {
         accumulator + cartItem.amount,
       0
     );
-  const handleAddToCart = (clickedItem: CartItemType) =>
+  const handleAddToCart = (product: CartItemType) =>
     setCartItems((prev) => {
       // 1. Product is already in the cart
       const isCartItemExist = prev.find(
-        (cartItem) => cartItem.id === clickedItem.id
+        (cartItem) => cartItem.id === product.id
       );
       if (isCartItemExist) {
         return prev.map((cartItem) =>
-          cartItem.id === clickedItem.id
+          cartItem.id === product.id
             ? { ...cartItem, amount: cartItem.amount + 1 }
             : cartItem
         );
       }
       // 2. First time add product
-      return [...prev, { ...clickedItem, amount: 1 }];
+      return [...prev, { ...product, amount: 1 }];
     });
   const handleRemoveFromCart = (id: number) => {
     setCartItems((prev) =>
@@ -63,7 +63,7 @@ function App() {
   if (error) return <div>Something went wrong ...</div>;
 
   return (
-    <Wrapper>
+    <StyledWrapper>
       <Drawer anchor="right" open={cartOpen} onClose={() => setCartOpen(false)}>
         <Cart
           cartItems={cartItems}
@@ -77,13 +77,13 @@ function App() {
         </Badge>
       </StyledButton>
       <Grid container spacing={3}>
-        {data?.map((itemData) => (
-          <Grid item key={itemData.id} xs={12} sm={4}>
-            <Item itemData={itemData} handleAddToCart={handleAddToCart} />
+        {data?.map((productData) => (
+          <Grid item key={productData.id} xs={12} sm={4}>
+            <Product data={productData} handleAddToCart={handleAddToCart} />
           </Grid>
         ))}
       </Grid>
-    </Wrapper>
+    </StyledWrapper>
   );
 }
 

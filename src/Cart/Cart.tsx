@@ -3,7 +3,7 @@ import CartItem from "../CartItem";
 // types
 import { CartItemType } from "../types";
 // styles
-import { Wrapper } from "./Cart.styles";
+import { StyledWrapper } from "./Cart.styles";
 
 interface Props {
   cartItems: CartItemType[];
@@ -19,19 +19,19 @@ const Cart: React.FC<Props> = ({ cartItems, addToCart, removeFromCart }) => {
       0
     );
   return (
-    <Wrapper>
+    <StyledWrapper>
       <h2>Your Shopping Cart</h2>
-      {cartItems.length === 0 ? <p>No items in cart.</p> : null}
+      {cartItems.length === 0 ? <p>No product in cart.</p> : null}
       {cartItems.map((cartItem) => (
         <CartItem
           key={cartItem.id}
-          itemData={cartItem}
+          product={cartItem}
           add={addToCart}
           remove={removeFromCart}
         />
       ))}
       <h2>Total: ${cartItemsSize(cartItems).toFixed(2)}</h2>
-    </Wrapper>
+    </StyledWrapper>
   );
 };
 
